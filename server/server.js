@@ -3,7 +3,7 @@ let bodyParser = require('body-parser');
 let {mongoose} = require('./db/mongoose');
 let {Todo} = require('./models/Todo');
 let {User} = require('./models/User');
-
+const {ObjectID} = require('mongodb');
 let app = express();
 
 app.use(bodyParser.json());
@@ -23,9 +23,30 @@ app.post('/todos', (req, res) => {
 //создается объект на основе Todo с параметром text. который берется из postman
 //(bodyParserom вытягивается текст) далее сохраняется в базу данных
 
+app.get('/todos', (req, res) => { //получить все документы в todos и озаглавить и замутить массив с объектами:
+    Todo.find().then((todos)=>{
+        res.send({todos});
+    }, (e) => {
+        res.status(400).send(e)
+    })
+});
 
+app.get('/todos/:id', (req, res) => {
 
+    let id = req.params.id;//id берется из того, куда мы заходим в postman
+    if (!ObjectID.isValid(id)) {
+        return res.status(404).send();
+    } Todo.findById(id).then((todo) => {
+        if (!todo){
+            return res.status(404).send();
+        }
+        res.send({todo});
+    }).catch((e) => {
+        res.status(400).send(e)
+    })
+}, () => {
 
+});
 app.listen(3000, () => {
     console.log('Started on port 3000.')
 });
