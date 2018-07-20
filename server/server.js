@@ -1,10 +1,11 @@
-let express = require('express');
-let bodyParser = require('body-parser');
-let {mongoose} = require('./db/mongoose');
-let {Todo} = require('./models/Todo');
-let {User} = require('./models/User');
+const express = require('express');
+const bodyParser = require('body-parser');
+const {mongoose} = require('./db/mongoose');
+const {Todo} = require('./models/Todo');
+const {User} = require('./models/User');
 const {ObjectID} = require('mongodb');
-let app = express();
+const app = express();
+const port = procces.env.PORT || 3000;
 
 app.use(bodyParser.json());
 
@@ -47,8 +48,8 @@ app.get('/todos/:id', (req, res) => {
 }, () => {
 
 });
-app.listen(3000, () => {
-    console.log('Started on port 3000.')
+app.listen(port, () => {
+    console.log(`Started on port ${port}.`)
 });
 
 module.exports = {
