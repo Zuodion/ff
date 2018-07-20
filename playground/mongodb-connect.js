@@ -19,7 +19,6 @@ MongoClient.connect("mongodb://localhost:27017/TodoApp",{ useNewUrlParser: true 
     //     console.log(JSON.stringify(result.ops, undefined, 2));//ops содержит все документы
     // });
 
-//кароче созадет новую коллекцию в виде объекта
 //     db.collection("Users").insertOne({
 //         name: 'Zuodion',
 //         age: 20,
