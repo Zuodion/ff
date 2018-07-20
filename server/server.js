@@ -1,10 +1,12 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const {mongoose} = require('./db/mongoose');
-const {Todo} = require('./models/todo');
-const {User} = require('./models/user');
-const {ObjectID} = require('mongodb');
-const app = express();
+let express = require('express');
+let bodyParser = require('body-parser');
+let {ObjectID} = require('mongodb');
+
+let {mongoose} = require('./db/mongoose');
+let {Todo} = require('./models/todo');
+let {User} = require('./models/user');
+
+let app = express();
 const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
@@ -13,48 +15,50 @@ app.post('/todos', (req, res) => {
     let todo = new Todo({
         text: req.body.text
     });
-    todo.save().then((doc)=> {
+
+    todo.save().then((doc) => {
         res.send(doc);
     }, (e) => {
-    res.status(400).send(e);
+        res.status(400).send(e);
     });
 });
+
 //Всё это работае вот так:есть 2 конструктор: todo и user. Работают
 //они на mongoose выше идет пост - создание странички по сути. далее
 //создается объект на основе Todo с параметром text. который берется из postman
 //(bodyParserom вытягивается текст) далее сохраняется в базу данных
 
-app.get('/todos', (req, res) => { //получить все документы в todos и озаглавить и замутить массив с объектами:
-    Todo.find().then((todos)=>{
+app.get('/todos', (req, res) => {//получить все документы в todos и озаглавить и замутить массив с объектами:
+    Todo.find().then((todos) => {
         res.send({todos});
     }, (e) => {
-        res.status(400).send(e)
-    })
+        res.status(400).send(e);
+    });
 });
 
-app.get('/todos/:id', (req, res) => {
 
-    let id = req.params.id;//id берется из того, куда мы заходим в postman
+
+app.get('/todos/:id', (req, res) => {
+    let id = req.params.id; //id берется из того, куда мы заходим в postman
+
     if (!ObjectID.isValid(id)) {
         return res.status(404).send();
-    } Todo.findById(id).then((todo) => {
-        if (!todo){
+    }
+
+    Todo.findById(id).then((todo) => {
+        if (!todo) {
             return res.status(404).send();
         }
         res.send({todo});
     }).catch((e) => {
-        res.status(400).send(e)
-    })
-}, () => {
-
+        res.status(400).send();
+    });
 });
 app.listen(port, () => {
-    console.log(`Started on port ${port}.`)
+    console.log(`Started up at port ${port}`);
 });
 
-module.exports = {
-    app
-};
+module.exports = {app};
 
 
 // let Todo = mongoose.model('Todo' , {//конструктор ёпта объекта с 3 свойствами и у каждого можно указать свои требования
