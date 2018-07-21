@@ -1,7 +1,7 @@
 let express = require('express');
 let bodyParser = require('body-parser');
 let {ObjectID} = require('mongodb');
-
+let _ = require('lodash');
 let {mongoose} = require('./db/mongoose');
 let {Todo} = require('./models/todo');
 let {User} = require('./models/user');
@@ -41,7 +41,7 @@ app.get('/todos', (req, res) => {//получить все документы в
 app.get('/todos/:id', (req, res) => {
     let id = req.params.id; //id берется из того, куда мы заходим в postman
 
-    if (!ObjectID.isValid(id)) {
+    if (!ObjectID.isValid(id)) {//id берется из того, куда мы заходим в postman
         return res.status(404).send();
     }
 
@@ -57,7 +57,6 @@ app.get('/todos/:id', (req, res) => {
 
 app.delete('/todos/:id', (req, res) => {//удаляет документ с id, который посылается по delete запросу
     let id = req.params.id;
-
     if (!ObjectID.isValid(id)) {
         return res.status(404).send();
     }
@@ -66,11 +65,36 @@ app.delete('/todos/:id', (req, res) => {//удаляет документ с id,
         if (!todo) {
             return res.status(404).send();
         }
-        res.status(200).send(todo);
+        res.status(200).send({todo});
     }).catch((e) => {
         res.status(400).send();
     });
 });
+
+app.patch('/todos/:id', (req, res) => { //кароче это все обновляет свойства объекта
+    let id = req.params.id;
+    let body = _.pick(req.body, ['text', 'completed']);// по параметрам которые берутся с модели
+    if (!ObjectID.isValid(id)) {
+        return res.status(404).send();
+    }
+
+    if(_.isBoolean(body.completed) && body.completed){
+        body.completedAt = new Date().getTime();//если completed true о пишет во сколько милисекунд это было сделано
+    } else {
+        body.completed = false;
+        body.completedAt = null;
+    }
+
+    Todo.findByIdAndUpdate(id, {$set: body}, {new: true}).then((todo) => {
+        if (!todo) {
+            return res.status(404).send();
+        }
+        res.status(200).send({todo});
+    }).catch((e) => {
+        res.status(400).send();
+    });
+});
+
 app.listen(port, () => {
     console.log(`Started up at port ${port}`);
 });
