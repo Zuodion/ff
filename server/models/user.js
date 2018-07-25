@@ -104,6 +104,16 @@ UserSchema.pre('save', function (next) {
     }
 });//запустит код перед событием 'save'
 
+UserSchema.methods.removeToken = function (token) {
+    let user = this;
+
+    return user.update({
+        $pull: {//удаляет массивы по заданым критериям
+            tokens: {token}
+        }
+    })
+};
+
 let User = mongoose.model('User', UserSchema);
 
 module.exports = {User};
