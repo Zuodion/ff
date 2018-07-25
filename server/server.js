@@ -14,9 +14,10 @@ const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 
-app.post('/todos', (req, res) => {
+app.post('/todos', authenticate, (req, res) => {
     let todo = new Todo({
-        text: req.body.text
+        text: req.body.text,
+        _creator: req.user._id
     });
 
     todo.save().then((doc) => {
@@ -31,8 +32,10 @@ app.post('/todos', (req, res) => {
 //создается объект на основе Todo с параметром text. который берется из postman
 //(bodyParserom вытягивается текст) далее сохраняется в базу данных
 
-app.get('/todos', (req, res) => {//получить все документы в todos и озаглавить и замутить массив с объектами:
-    Todo.find().then((todos) => {
+app.get('/todos', authenticate, (req, res) => {//получить все документы в todos и озаглавить и замутить массив с объектами:
+    Todo.find({
+        _creator: req.user._id
+    }).then((todos) => {
         res.send({todos});
     }, (e) => {
         res.status(400).send(e);
@@ -48,7 +51,10 @@ app.get('/todos/:id', (req, res) => {
         return res.status(404).send();
     }
 
-    Todo.findById(id).then((todo) => {
+    Todo.findOne({
+        _id: id,
+        _creator: req.user._id
+    }).then((todo) => {
         if (!todo) {
             return res.status(404).send();
         }
@@ -64,7 +70,10 @@ app.delete('/todos/:id', (req, res) => {//удаляет документ с id,
         return res.status(404).send();
     }
 
-    Todo.findByIdAndRemove(id).then((todo) => {
+    Todo.findOneAndRemove({
+        _id: id,
+        _creator: req.user._id
+    }).then((todo) => {
         if (!todo) {
             return res.status(404).send();
         }
