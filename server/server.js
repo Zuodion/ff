@@ -7,6 +7,7 @@ let _ = require('lodash');
 let {mongoose} = require('./db/mongoose');
 let {Todo} = require('./models/todo');
 let {User} = require('./models/user');
+let {authenticate} = require('./middleware/authenticate1.js');
 
 let app = express();
 const port = process.env.PORT || 3000;
@@ -98,8 +99,8 @@ app.patch('/todos/:id', (req, res) => { //кароче это все обнов�
 });
 
 app.post('/users', (req, res) => {
-    var body = _.pick(req.body, ['email', 'password']);
-    var user = new User(body);
+    let body = _.pick(req.body, ['email', 'password']);
+    let user = new User(body);
 
     user.save().then(() => {
         return user.generateAuthToken();
@@ -110,11 +111,13 @@ app.post('/users', (req, res) => {
     })
 });
 
+app.get('/users/me', authenticate, (req, res) => {
+    res.send(req.user);//кароче идет в аутентификациу, смотрит и ищет по токену который рекваирится и отсылает назад юзера
+});
+
 app.listen(port, () => {
     console.log(`Started up at port ${port}`);
 });
-
-
 
 module.exports = {app};
 
