@@ -4,6 +4,7 @@ let express = require('express');
 let bodyParser = require('body-parser');
 let {ObjectID} = require('mongodb');
 let _ = require('lodash');
+
 let {mongoose} = require('./db/mongoose');
 let {Todo} = require('./models/todo');
 let {User} = require('./models/user');
@@ -44,7 +45,7 @@ app.get('/todos', authenticate, (req, res) => {//получить все док�
 
 
 
-app.get('/todos/:id', (req, res) => {
+app.get('/todos/:id', authenticate,(req, res) => {
     let id = req.params.id; //id берется из того, куда мы заходим в postman
 
     if (!ObjectID.isValid(id)) {//id берется из того, куда мы заходим в postman
@@ -64,7 +65,7 @@ app.get('/todos/:id', (req, res) => {
     });
 });
 
-app.delete('/todos/:id', (req, res) => {//удаляет документ с id, который посылается по delete запросу
+app.delete('/todos/:id', authenticate, (req, res) => {//удаляет документ с id, который посылается по delete запросу
     let id = req.params.id;
     if (!ObjectID.isValid(id)) {
         return res.status(404).send();
@@ -83,7 +84,7 @@ app.delete('/todos/:id', (req, res) => {//удаляет документ с id,
     });
 });
 
-app.patch('/todos/:id', (req, res) => { //кароче это все обновляет свойства объекта
+app.patch('/todos/:id', authenticate, (req, res) => { //кароче это все обновляет свойства объекта
     let id = req.params.id;
     let body = _.pick(req.body, ['text', 'completed']);// по параметрам которые берутся с модели
     if (!ObjectID.isValid(id)) {
