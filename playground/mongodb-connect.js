@@ -8,16 +8,16 @@ MongoClient.connect("mongodb://localhost:27017/TodoApp",{ useNewUrlParser: true 
     console.log('Connected to MongoDB server');
     const db = client.db('TodoApp');
 
-    // db.collection('Todos').insertOne({//insertOne - вставляет новый документ
-    //     text: 'Something to do',
-    //     completed: false
-    // }, (err, result) => {
-    //     if (err) {
-    //         return console.log('Cannot to connect to todo', err);
-    //     }
-    //
-    //     console.log(JSON.stringify(result.ops, undefined, 2));//ops содержит все документы
-    // });
+    db.collection('Todos').insertOne({//insertOne - вставляет новый документ
+        text: 'Something to do',
+        completed: false
+    }, (err, result) => {
+        if (err) {
+            return console.log('Cannot to connect to todo', err);
+        }
+
+        console.log(JSON.stringify(result.ops, undefined, 2));//ops содержит все документы
+    });
 
 //     db.collection("Users").insertOne({
 //         name: 'Zuodion',

@@ -3,9 +3,9 @@ let mongoose = require('mongoose');
 let Todo = mongoose.model('Todo' , {//конструктор ёпта
     text: {
         type: String,
-        required: true,//обязательный существовать
-        minlength: 1,//минимальная длинна
-        trim: true//растояние для того чтобы нормально записать в базу
+        required: true,
+        minlength: 1,
+        trim: true
     },
     completed: {
         type: Boolean,
